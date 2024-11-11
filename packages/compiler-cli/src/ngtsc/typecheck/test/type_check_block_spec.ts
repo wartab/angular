@@ -1791,6 +1791,29 @@ describe('type check blocks', () => {
       );
     });
 
+    it('should generate a switch block with multiple cases', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2; 3) {
+            {{twoOrThree()}}
+          }
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: case 3: "" + ((this).twoOrThree()); break; ' +
+          'default: "" + ((this).default()); break; }',
+      );
+    });
+
     it('should generate a switch block that only has a default case', () => {
       const TEMPLATE = `
         @switch (expr) {
