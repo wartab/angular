@@ -22,7 +22,7 @@ The `@switch` block is inspired by the JavaScript `switch` statement:
 ## Description
 
 The `@switch` blocks displays content selected by one of the cases matching against the conditional
-expressions. The value of the conditional expressions is compared to the case expressions using
+expressions. The value of the conditional expression is compared to the case expressions using
 the `===` operator.
 
 You may provide multiple case expressions in a single `@case` block by separating each case by `;`.
