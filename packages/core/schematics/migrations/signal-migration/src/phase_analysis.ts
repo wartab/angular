@@ -45,7 +45,6 @@ export function executeAnalysisPhase(
     templateTypeChecker,
     resourceLoader,
     evaluator,
-    refEmitter,
   }: AnalysisProgramInfo,
 ) {
   // Pass 1
@@ -61,7 +60,6 @@ export function executeAnalysisPhase(
         reflector,
         dtsMetadataReader,
         evaluator,
-        refEmitter,
         knownInputs,
         result,
       ),
@@ -95,6 +93,7 @@ export function executeAnalysisPhase(
   );
   // Register pass 3. Check incompatible patterns pass.
   pass3__checkIncompatiblePatterns(
+    host,
     inheritanceGraph,
     typeChecker,
     pass2And3SourceFileVisitor,

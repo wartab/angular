@@ -397,7 +397,7 @@ runInEachFileSystem(() => {
         export class TestCmp {}
 
         @Component({
-          template: '', 
+          template: '',
           selector: 'target-cmp',
           standalone: false,
         })
@@ -432,7 +432,7 @@ runInEachFileSystem(() => {
         export class TestCmp {}
 
         @Component({
-          template: '', 
+          template: '',
           selector: 'target-cmp',
           standalone: false,
         })
@@ -698,6 +698,47 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain(`Property 'input' does not exist on type 'TestCmp'.`);
+    });
+
+    it('should error on non valid typeof expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: \` {{typeof {} === 'foobar'}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
+    });
+
+    it('should error on misused logical not in typeof expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          // should be !(typeof {} === 'object')
+          template: \` {{!typeof {} === 'object'}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
     });
 
     describe('strictInputTypes', () => {
@@ -7670,9 +7711,7 @@ suppress
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('Imports array contains unused imports');
         expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(diags[0].relatedInformation![0].messageText).toBe(
-          'Directive "UnusedDir" is not used within the template',
-        );
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
       });
 
       it('should report when a pipe is not used within a template', () => {
@@ -7729,9 +7768,7 @@ suppress
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('Imports array contains unused imports');
         expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(diags[0].relatedInformation?.[0].messageText).toBe(
-          'Pipe "UnusedPipe" is not used within the template',
-        );
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedPipe');
       });
 
       it('should not report imports only used inside @defer blocks', () => {
@@ -7919,12 +7956,8 @@ suppress
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('Imports array contains unused imports');
         expect(diags[0].relatedInformation?.length).toBe(2);
-        expect(diags[0].relatedInformation![0].messageText).toBe(
-          'Directive "NgFor" is not used within the template',
-        );
-        expect(diags[0].relatedInformation![1].messageText).toBe(
-          'Pipe "PercentPipe" is not used within the template',
-        );
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('NgFor');
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('PercentPipe');
       });
 
       it('should report unused imports coming from a nested array from the same file', () => {
@@ -7986,9 +8019,7 @@ suppress
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('Imports array contains unused imports');
         expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(diags[0].relatedInformation![0].messageText).toBe(
-          'Directive "UnusedDir" is not used within the template',
-        );
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
       });
 
       it('should report unused imports coming from an array used as the `imports` initializer', () => {
@@ -8039,9 +8070,7 @@ suppress
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('Imports array contains unused imports');
         expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(diags[0].relatedInformation![0].messageText).toBe(
-          'Directive "UnusedDir" is not used within the template',
-        );
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
       });
 
       it('should not report unused imports coming from an array through a spread expression from a different file', () => {
