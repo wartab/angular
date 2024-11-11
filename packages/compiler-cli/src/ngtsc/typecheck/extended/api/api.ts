@@ -261,7 +261,7 @@ class TemplateVisitor<Code extends ErrorCode>
   }
 
   visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
-    block.expression && this.visitAst(block.expression);
+    block.expressions && block.expressions.forEach((exp) => this.visitAst(exp));
     this.visitAllNodes(block.children);
   }
 

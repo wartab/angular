@@ -838,7 +838,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
-    block.expression?.visit(this);
+    block.expressions?.forEach((expression) => expression.visit(this));
     this.ingestScopedNode(block);
   }
 
