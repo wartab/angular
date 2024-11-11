@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {ApplicationRef, PLATFORM_ID, Provider, Type, ɵsetDocument} from '@angular/core';
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
-import {getComponentDef} from '@angular/core/src/render3/definition';
+import {getComponentDef} from '@angular/core/src/render3/def_getters';
 import {
   bootstrapApplication,
   HydrationFeature,
@@ -88,10 +88,10 @@ export function resetTViewsFor(...types: Type<unknown>[]) {
 export function hydrate(
   doc: Document,
   component: Type<unknown>,
-  options?: {
+  options: {
     envProviders?: Provider[];
-    hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
-  },
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
+  } = {},
 ) {
   function _document(): any {
     ɵsetDocument(doc);
@@ -99,13 +99,13 @@ export function hydrate(
     return doc;
   }
 
-  const envProviders = options?.envProviders ?? [];
-  const hydrationFeatures = options?.hydrationFeatures ?? [];
+  const {envProviders = [], hydrationFeatures = () => []} = options;
+
   const providers = [
     ...envProviders,
     {provide: PLATFORM_ID, useValue: 'browser'},
     {provide: DOCUMENT, useFactory: _document, deps: []},
-    provideClientHydration(...hydrationFeatures),
+    provideClientHydration(...hydrationFeatures()),
   ];
 
   return bootstrapApplication(component, {providers});
@@ -158,7 +158,7 @@ export async function prepareEnvironmentAndHydrate(
   component: Type<unknown>,
   options?: {
     envProviders?: Provider[];
-    hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
   },
 ): Promise<ApplicationRef> {
   prepareEnvironment(doc, html);

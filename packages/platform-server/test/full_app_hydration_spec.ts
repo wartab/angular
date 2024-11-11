@@ -32,7 +32,6 @@ import {
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
-  getPlatform,
   inject,
   Input,
   NgZone,
@@ -51,7 +50,7 @@ import {
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {HydrationFeature, withI18nSupport} from '@angular/platform-browser';
+import {withI18nSupport} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 
 import {
@@ -83,6 +82,7 @@ import {
   withDebugConsole,
   withNoopErrorHandler,
   verifyEmptyConsole,
+  clearConsole,
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
@@ -99,10 +99,11 @@ describe('platform-server full application hydration integration', () => {
         }
       }
     }
-    if (getPlatform()) destroyPlatform();
   });
 
-  afterAll(() => destroyPlatform());
+  afterEach(() => {
+    destroyPlatform();
+  });
 
   describe('hydration', () => {
     let doc: Document;
@@ -111,7 +112,10 @@ describe('platform-server full application hydration integration', () => {
       doc = TestBed.inject(DOCUMENT);
     });
 
-    afterEach(() => clearDocument(doc));
+    afterEach(() => {
+      clearDocument(doc);
+      clearConsole(TestBed.inject(ApplicationRef));
+    });
 
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
@@ -1787,7 +1791,7 @@ describe('platform-server full application hydration integration', () => {
             vcr = inject(ViewContainerRef);
           }
 
-          const hydrationFeatures = [] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
 
           const ssrContents = getAppContents(html);
@@ -1808,7 +1812,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1827,7 +1831,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1843,7 +1847,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1860,7 +1864,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1879,7 +1883,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1916,7 +1920,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -1963,7 +1967,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
 
           const ssrContents = getAppContents(html);
@@ -2010,7 +2014,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2056,7 +2060,7 @@ describe('platform-server full application hydration integration', () => {
             count = 0;
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2110,7 +2114,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2149,7 +2153,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2192,7 +2196,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2235,7 +2239,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2278,7 +2282,7 @@ describe('platform-server full application hydration integration', () => {
             }
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2316,7 +2320,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2352,7 +2356,7 @@ describe('platform-server full application hydration integration', () => {
             case = 0;
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2385,7 +2389,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2416,7 +2420,7 @@ describe('platform-server full application hydration integration', () => {
             isServer = isPlatformServer(inject(PLATFORM_ID)) + '';
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           let ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2459,7 +2463,7 @@ describe('platform-server full application hydration integration', () => {
             secondCase = 1;
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2504,7 +2508,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class AppComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(AppComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2542,7 +2546,7 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {}
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2580,7 +2584,7 @@ describe('platform-server full application hydration integration', () => {
             items = [1, 2, 3];
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2619,7 +2623,7 @@ describe('platform-server full application hydration integration', () => {
             items = [1, 2, 3];
           }
 
-          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const hydrationFeatures = () => [withI18nSupport()];
           const html = await ssr(SimpleComponent, {hydrationFeatures});
           const ssrContents = getAppContents(html);
           expect(ssrContents).toContain('<app ngh');
@@ -2666,7 +2670,7 @@ describe('platform-server full application hydration integration', () => {
             })
             class SimpleComponent {}
 
-            const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+            const hydrationFeatures = () => [withI18nSupport()];
             const html = await ssr(SimpleComponent, {hydrationFeatures});
             const ssrContents = getAppContents(html);
             expect(ssrContents).toContain('<app ngh');
@@ -2712,7 +2716,7 @@ describe('platform-server full application hydration integration', () => {
             })
             class SimpleComponent {}
 
-            const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+            const hydrationFeatures = () => [withI18nSupport()];
             const html = await ssr(SimpleComponent, {hydrationFeatures});
             const ssrContents = getAppContents(html);
             expect(ssrContents).toContain('<app ngh');
@@ -3017,6 +3021,7 @@ describe('platform-server full application hydration integration', () => {
         }
 
         const html = await ssr(SimpleComponent);
+
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain('<app ngh');
 

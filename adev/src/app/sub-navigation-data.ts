@@ -455,12 +455,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/defer',
           },
           {
-            label: 'Image Optimization',
+            label: 'Image optimization',
             path: 'guide/image-optimization',
             contentPath: 'guide/image-optimization',
           },
           {
-            label: 'Server-side Rendering',
+            label: 'Server-side rendering',
             path: 'guide/ssr',
             contentPath: 'guide/ssr',
           },
@@ -468,6 +468,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Build-time prerendering',
             path: 'guide/prerendering',
             contentPath: 'guide/prerendering',
+          },
+          {
+            label: 'Hybrid rendering',
+            path: 'guide/hybrid-rendering',
+            contentPath: 'guide/hybrid-rendering',
           },
           {
             label: 'Hydration',
@@ -950,7 +955,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/cache',
           },
           {
-            label: 'clear',
+            label: 'clean',
             path: 'cli/cache/clean',
           },
           {
@@ -1443,6 +1448,16 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Lazy-loaded routes',
         path: 'reference/migrations/route-lazy-loading',
         contentPath: 'reference/migrations/route-lazy-loading',
+      },
+      {
+        label: 'Signal inputs',
+        path: 'reference/migrations/signal-inputs',
+        contentPath: 'reference/migrations/signal-inputs',
+      },
+      {
+        label: 'Signal queries',
+        path: 'reference/migrations/signal-queries',
+        contentPath: 'reference/migrations/signal-queries',
       },
     ],
   },

@@ -55,8 +55,8 @@ export async function applySignalQueriesRefactoring(
   });
 
   const unitData = await migration.analyze(programInfo);
-  const merged = await migration.merge([unitData]);
-  const {replacements, knownQueries} = await migration.migrate(merged, programInfo);
+  const globalMeta = await migration.globalMeta(unitData);
+  const {replacements, knownQueries} = await migration.migrate(globalMeta, programInfo);
 
   const targetQueries = Array.from(knownQueries.knownQueryIDs.values()).filter((descriptor) =>
     shouldMigrateQuery(descriptor, projectFile(descriptor.node.getSourceFile(), programInfo)),
@@ -106,7 +106,7 @@ export async function applySignalQueriesRefactoring(
   } else if (incompatibilityMessages.size > 0) {
     const queryPlural = incompatibilityMessages.size === 1 ? 'query' : `queries`;
     message = `${incompatibilityMessages.size} ${queryPlural} could not be migrated.\n`;
-    message += `For more details, click on the skipped inputs and try to migrate individually.\n`;
+    message += `For more details, click on the skipped queries and try to migrate individually.\n`;
   }
 
   // Only suggest the "force ignoring" option if there are actually
