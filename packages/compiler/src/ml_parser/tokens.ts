@@ -35,6 +35,8 @@ export const enum TokenType {
   EXPANSION_FORM_END,
   BLOCK_OPEN_START,
   BLOCK_OPEN_END,
+  BLOCK_OPEN_START_EXTENSION,
+  BLOCK_OPEN_END_EXTENSION,
   BLOCK_CLOSE,
   BLOCK_PARAMETER,
   INCOMPLETE_BLOCK_OPEN,
@@ -72,6 +74,8 @@ export type Token =
   | BlockParameterToken
   | BlockOpenStartToken
   | BlockOpenEndToken
+  | BlockOpenStartExtensionToken
+  | BlockOpenEndExtensionToken
   | BlockCloseToken
   | IncompleteBlockOpenToken
   | LetStartToken
@@ -223,6 +227,16 @@ export interface BlockOpenStartToken extends TokenBase {
 
 export interface BlockOpenEndToken extends TokenBase {
   type: TokenType.BLOCK_OPEN_END;
+  parts: [];
+}
+
+export interface BlockOpenStartExtensionToken extends TokenBase {
+  type: TokenType.BLOCK_OPEN_START_EXTENSION;
+  parts: [name: string];
+}
+
+export interface BlockOpenEndExtensionToken extends TokenBase {
+  type: TokenType.BLOCK_OPEN_END_EXTENSION;
   parts: [];
 }
 

@@ -587,6 +587,21 @@ class _TreeBuilder {
       this._advance();
     }
 
+    const extensions: html.BlockExtension[] = [];
+
+    while (this._peek.type === TokenType.BLOCK_OPEN_START_EXTENSION) {
+      this._advance();
+
+      const extensionParameters: html.BlockParameter[] = [];
+
+      while (this._peek.type === TokenType.BLOCK_PARAMETER) {
+        const paramToken = this._advance<BlockParameterToken>();
+        extensionParameters.push(
+          new html.BlockParameter(paramToken.parts[0], paramToken.sourceSpan),
+        );
+      }
+    }
+
     const end = this._peek.sourceSpan.fullStart;
     const span = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.

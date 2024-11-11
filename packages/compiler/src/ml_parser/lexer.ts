@@ -231,7 +231,7 @@ class _Tokenizer {
           }
         } else if (
           this._tokenizeLet &&
-          // Use `peek` instead of `attempCharCode` since we
+          // Use `peek` instead of `attemptCharCode` since we
           // don't want to advance in case it's not `@let`.
           this._cursor.peek() === chars.$AT &&
           !this._inInterpolation &&
@@ -239,7 +239,7 @@ class _Tokenizer {
         ) {
           this._consumeLetDeclaration(start);
         } else if (this._tokenizeBlocks && this._attemptCharCode(chars.$AT)) {
-          this._consumeBlockStart(start);
+          this._consumeBlockStart();
         } else if (
           this._tokenizeBlocks &&
           !this._inInterpolation &&
@@ -284,33 +284,51 @@ class _Tokenizer {
     return this._cursor.getChars(nameCursor).trim();
   }
 
-  private _consumeBlockStart(start: CharacterCursor) {
-    this._beginToken(TokenType.BLOCK_OPEN_START, start);
-    const startToken = this._endToken([this._getBlockName()]);
+  private _consumeBlockStart() {
+    let blockToken: Token | null = null;
+    let nextStartType = TokenType.BLOCK_OPEN_START;
 
-    if (this._cursor.peek() === chars.$LPAREN) {
-      // Advance past the opening paren.
-      this._cursor.advance();
-      // Capture the parameters.
-      this._consumeBlockParameters();
-      // Allow spaces before the closing paren.
-      this._attemptCharCodeUntilFn(isNotWhitespace);
+    do {
+      const start = this._cursor.clone();
+      this._beginToken(nextStartType, start);
+      const startToken = this._endToken([this._getBlockName()]);
 
-      if (this._attemptCharCode(chars.$RPAREN)) {
-        // Allow spaces after the paren.
+      if (blockToken === null) {
+        blockToken = startToken;
+      }
+
+      if (this._cursor.peek() === chars.$LPAREN) {
+        // Advance past the opening paren.
+        this._cursor.advance();
+        // Capture the parameters.
+        this._consumeBlockParameters();
+        // Allow spaces before the closing paren.
         this._attemptCharCodeUntilFn(isNotWhitespace);
+
+        if (this._attemptCharCode(chars.$RPAREN)) {
+          // Allow spaces after the paren.
+          this._attemptCharCodeUntilFn(isNotWhitespace);
+        } else {
+          blockToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
+          return;
+        }
+      }
+
+      if (this._attemptCharCode(chars.$LBRACE)) {
+        if (nextStartType === TokenType.BLOCK_OPEN_START) {
+          this._beginToken(TokenType.BLOCK_OPEN_END);
+        } else {
+          this._beginToken(TokenType.BLOCK_OPEN_END_EXTENSION);
+        }
+        this._endToken([]);
+      } else if (this._cursor.peek() === chars.$AT) {
+        this._endToken([]);
+        nextStartType = TokenType.BLOCK_OPEN_START_EXTENSION;
       } else {
-        startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
+        blockToken!.type = TokenType.INCOMPLETE_BLOCK_OPEN;
         return;
       }
-    }
-
-    if (this._attemptCharCode(chars.$LBRACE)) {
-      this._beginToken(TokenType.BLOCK_OPEN_END);
-      this._endToken([]);
-    } else {
-      startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
-    }
+    } while (this._attemptCharCode(chars.$AT));
   }
 
   private _consumeBlockEnd(start: CharacterCursor) {

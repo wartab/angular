@@ -141,6 +141,18 @@ export class Block extends NodeWithI18n {
   }
 }
 
+export class BlockExtension implements BaseNode {
+  constructor(
+    public name: string,
+    public parameters: BlockParameter[],
+    public sourceSpan: ParseSourceSpan,
+  ) {}
+
+  visit(visitor: Visitor, context: any) {
+    return visitor.visitBlockExtension(this, context);
+  }
+}
+
 export class BlockParameter implements BaseNode {
   constructor(
     public expression: string,
@@ -178,6 +190,7 @@ export interface Visitor {
   visitExpansion(expansion: Expansion, context: any): any;
   visitExpansionCase(expansionCase: ExpansionCase, context: any): any;
   visitBlock(block: Block, context: any): any;
+  visitBlockExtension(blockExtension: BlockExtension, context: any): any;
   visitBlockParameter(parameter: BlockParameter, context: any): any;
   visitLetDeclaration(decl: LetDeclaration, context: any): any;
 }
