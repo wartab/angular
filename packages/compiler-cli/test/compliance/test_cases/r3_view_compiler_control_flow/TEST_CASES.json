@@ -84,7 +84,7 @@
           "files": [
             {
               "expected": "switch_with_multi_case_template.js",
-              "generated": "empty_switch.js"
+              "generated": "switch_with_multi_case.js"
             }
           ],
           "failureMessage": "Incorrect template"
